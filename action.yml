@@ -1,0 +1,45 @@
+name: 'Code Pipeline Deployment List'
+description: 'Retrieves ISPW deployments using optional filter criteria. Potentially, large amounts of data may be returned from the deployments API. This API has a limit of 5000 records. You should attempt to set as many query parameters as possible to reduce the number of items returned.'
+branding:
+  icon: play
+  color: orange
+inputs:
+  ces_url:
+    description: 'The URL to send requests to.'
+    required: true
+  ces_token:
+    description: 'The token to use when connecting to Code Pipeline through CES.'
+    required: true
+  srid:
+    description: 'The ID for the instance of Code Pipeline to connect to'
+    required: true
+  todaysDate:
+    description: 'True/False value indicating whether or not to include todays date deployments. This field is not case sensitive.'
+    required: false
+  priorWeek:
+    description: 'True/False value indicating whether or not to include prior week deployments. This field is not case sensitive. The default value is true.'
+    required: false
+  startDate:
+    description: 'Deployment start date/time in yyyy-mm-dd format when the set will be dispatched for execution.'
+    required: false
+  endDate:
+    description: 'Deployment end date/time in yyyy-mm-dd format.'
+    required: false
+  requestId:
+    description: 'A unique numerical id assigned to this deployment request. Wildcard * is not supported.'
+    required: false
+  setId: 
+    description: 'The set ID you want information on. This field is case sensitive. Wildcard * is only supported.'
+    required: false
+  environment:
+    description: 'The logical execution environment where the components will be deployed for this request. This field is not case sensitive. Wildcard * is only supported.'
+    required: false
+  status:
+    description: 'The overall current status of the deploy request, which may be Planned, Confirmed, Staged, Implemented, Completed, Failed, or Terminated. This field is not case sensitive. Wildcard * is only supported.'
+    required: false
+outputs:
+  output_json:
+    description: 'the JSON output from build'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
