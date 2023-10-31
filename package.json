@@ -1,7 +1,7 @@
 {
   "name": "code-pipeline-deployment-list",
   "version": "1.0.0",
-  "description": "Retrieves ISPW deployments using optional filter criteria. Potentially, large amounts of data may be returned from the deployments API. This API has a limit of 5000 records. You should attempt to set as many query parameters as possible to reduce the number of items returned.",
+  "description": "Retrieves ISPW deployments using optional filter criteria.",
   "publisher": "BMC",
   "main": "./dist/index.js",
   "scripts": {
