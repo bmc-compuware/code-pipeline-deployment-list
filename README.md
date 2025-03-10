@@ -64,7 +64,7 @@ jobs:
 | `requestId` | Optional | A unique numerical id assigned to this deployment request. Wildcard * is not supported. |
 | `setId` | Optional | The set ID you want information on. This field is case sensitive. Wildcard * is only supported. |
 | `environment` | Optional | The logical execution environment where the components will be deployed for this request. This field is not case sensitive. Wildcard * is only supported. |
-| `status` | Optional | The overall current status of the deploy request, which may be Planned, Confirmed, Staged, Implemented, Completed, Failed, or Terminated. This field is not case sensitive. Wildcard * is only supported. |
+| `status` | Optional | The overall current status of the deploy request, which may be Planned, Confirmed, Staged, Implemented, Completed, Failed, Pending, or Terminated. This field is not case sensitive. Wildcard * is only supported. |
 
 ## Outputs
 
