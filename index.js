@@ -3,7 +3,7 @@
 * SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES ARE TRADEMARKS OF THEIR
 * RESPECTIVE OWNERS.
 *
-* (c) Copyright 2023-2026 BMC Software, Inc.
+* (c) Copyright 2023 BMC Software, Inc.
 * This code is licensed under MIT license (see LICENSE.txt for details)
 */
 const core = require('@actions/core');
@@ -17,7 +17,7 @@ try
   inputs = utils.retrieveInputs(core, inputs);
   core.info('Code Pipeline: parsed inputs: ' + utils.convertObjectToJson(inputs));
   
-  // const requiredFields = ['ces_url', 'ces_token', 'srid'];
+  const requiredFields = ['ces_url', 'ces_token', 'srid'];
   if (!validateRequiredParms(inputs.ces_url, inputs.ces_token, inputs.srid)) 
   {
     throw new MissingArgumentException(
@@ -25,8 +25,8 @@ try
       '\nSkipping the deployment list request....');
   }
 
-  const requestBasePath = `/ispw/${inputs.srid}/deployments`;
-  const requestQueryPath = prepareRequestQueryPath(inputs);
+  let requestBasePath = `/ispw/${inputs.srid}/deployments`;
+  let requestQueryPath = prepareRequestQueryPath(inputs);
   const requestUrl = prepareRequestUrl(inputs.ces_url, requestBasePath, requestQueryPath);
   core.info('Code Pipeline: request url: ' + requestUrl.href); 
  
@@ -156,7 +156,7 @@ function prepareRequestQueryPath(inputs)
 
 function prepareRequestUrl(cesUrl, requestBasePath, requestQueryPath) 
 {
-  const lowercaseUrl = cesUrl.toLowerCase();
+  let lowercaseUrl = cesUrl.toLowerCase();
   
   // remove trailing '/compuware' from url, if it exists  
   const cpwrIndex = lowercaseUrl.lastIndexOf('/compuware');
@@ -249,10 +249,5 @@ DeploymentListFailureException.prototype = Object.create(Error.prototype);
 module.exports = {
   handleResponseBody,
   DeploymentListFailureException,
-  validateRequiredParms,
-  MissingArgumentException,
-  prepareRequestQueryPath,
-  prepareRequestUrl,
-  setOutputs,
-  getHttpGetPromise
+  validateRequiredParms
 };
