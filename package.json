@@ -9,7 +9,9 @@
     "lint": "npx eslint ./**.js --fix",
     "test": "nyc --all=true --exclude=\"dist/**\" --exclude=\"coverage/**\" --exclude=\"test/**\" --reporter=json --reporter=text mocha",
     "coverage": "nyc check-coverage --lines 60 --branches 75 --statements 60 --functions 60",
-    "check": "npm run lint && npm run build && npm run test && npm run coverage"
+    "check": "npm run lint && npm run build && npm run test && npm run coverage",
+    "clean-install": "npx rimraf node_modules && npm install",
+    "reset-deps": "npx rimraf node_modules package-lock.json && npm install"
   },
   "repository": {
     "type": "git",
@@ -33,8 +35,7 @@
   "dependencies": {
     "@actions/core": "^1.2.7",
     "@actions/github": "^4.0.0",
-    "@bmc-compuware/ispw-action-utilities": "git+https://github.com/bmc-compuware/ispw-action-utilities.git#ZENG-444743",
-    "@vercel/ncc": "^0.38.4",
+    "@bmc-compuware/ispw-action-utilities": "git+https://github.com/bmc-compuware/ispw-action-utilities.git",    
     "path": "^0.12.7"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "esm": "^3.2.25",
     "mocha": "^8.3.2",
     "nock": "^13.0.11",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "@vercel/ncc": "^0.38.4"
   }
 }
