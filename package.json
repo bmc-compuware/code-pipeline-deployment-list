@@ -33,19 +33,15 @@
   },
   "homepage": "https://github.com/bmc-compuware/code-pipeline-deployment-list#readme",
   "dependencies": {
-    "@actions/core": "^1.2.7",
-    "@actions/github": "^4.0.0",
-    "@bmc-compuware/ispw-action-utilities": "git+https://github.com/bmc-compuware/ispw-action-utilities.git",    
-    "path": "^0.12.7"
+    "@actions/core": "^2.0.3",
+    "@bmc-compuware/ispw-action-utilities": "git+https://github.com/bmc-compuware/ispw-action-utilities.git"
   },
   "devDependencies": {
     "chai": "^4.3.4",
     "eslint": "^7.25.0",
     "eslint-config-google": "^0.14.0",
-    "esm": "^3.2.25",
-    "mocha": "^8.3.2",
-    "nock": "^13.0.11",
-    "nyc": "^15.1.0",
+    "mocha": "^11.7.6",
+    "nyc": "^18.0.0",
     "@vercel/ncc": "^0.38.4"
   }
 }
