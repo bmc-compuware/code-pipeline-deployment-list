@@ -35,7 +35,7 @@
   "dependencies": {
     "@actions/core": "^1.2.7",
     "@actions/github": "^4.0.0",
-    "@bmc-compuware/ispw-action-utilities": "git+https://github.com/bmc-compuware/ispw-action-utilities.git",    
+    "@bmc-compuware/ispw-action-utilities": "git+https://github.com/bmc-compuware/ispw-action-utilities.git",
     "path": "^0.12.7"
   },
   "devDependencies": {
@@ -47,5 +47,8 @@
     "nock": "^13.0.11",
     "nyc": "^15.1.0",
     "@vercel/ncc": "^0.38.4"
+  },
+  "overrides": {
+    "undici": "6.29.1"
   }
 }
