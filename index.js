@@ -10,26 +10,23 @@ const core = require('@actions/core');
 const utils = require('@bmc-compuware/ispw-action-utilities');
 const axios = require('axios').default;
 
-try 
-{
+try {
   let inputs = ['ces_url', 'ces_token', 'srid', 'todaysDate', 'priorWeek', 'startDate', 'endDate',
-  'requestId', 'setId', 'environment', 'status'];
+    'requestId', 'setId', 'environment', 'status'];
   inputs = utils.retrieveInputs(core, inputs);
   core.info('Code Pipeline: parsed inputs: ' + utils.convertObjectToJson(inputs));
-  
-  const requiredFields = ['ces_url', 'ces_token', 'srid'];
-  if (!validateRequiredParms(inputs.ces_url, inputs.ces_token, inputs.srid)) 
-  {
+
+  if (!validateRequiredParms(inputs.ces_url, inputs.ces_token, inputs.srid)) {
     throw new MissingArgumentException(
         'Inputs required for Code Pipeline deployment list are missing. ' +
       '\nSkipping the deployment list request....');
   }
 
-  let requestBasePath = `/ispw/${inputs.srid}/deployments`;
-  let requestQueryPath = prepareRequestQueryPath(inputs);
+  const requestBasePath = `/ispw/${inputs.srid}/deployments`;
+  const requestQueryPath = prepareRequestQueryPath(inputs);
   const requestUrl = prepareRequestUrl(inputs.ces_url, requestBasePath, requestQueryPath);
-  core.info('Code Pipeline: request url: ' + requestUrl.href); 
- 
+  core.info('Code Pipeline: request url: ' + requestUrl.href);
+
   getHttpGetPromise(requestUrl, inputs.ces_token)
       .then((response) => {
         core.info('Code Pipeline: received response body: ' +
@@ -56,42 +53,40 @@ try
 
   // the following code will execute after the HTTP request was started,
   // but before it receives a response.
-} 
-catch (error) 
-{
-  if (error instanceof MissingArgumentException) 
-  {
+} catch (error) {
+  if (error instanceof MissingArgumentException) {
     core.setFailed(error.message);
-  } 
-  else 
-  {
+  } else {
     core.info(error.stack);
     console.error('An error occurred while calling the deployment list');
     core.setFailed(error.message);
   }
 }
 
-function validateRequiredParms(ces_url, ces_token, srid) 
-{
+/**
+ * Validates that required deployment-list inputs are present.
+ * @param {string} cesUrl CES base URL
+ * @param {string} cesToken CES authentication token
+ * @param {string} srid Code Pipeline instance ID
+ * @return {boolean} true when all required inputs have content
+ */
+function validateRequiredParms(cesUrl, cesToken, srid) {
   let isValid = true;
-  if (!utils.stringHasContent(ces_url)) 
-  {
+  if (!utils.stringHasContent(cesUrl)) {
     isValid = false;
-    console.error(`Missing input:ces_url must be specified.`); 
+    console.error(`Missing input:ces_url must be specified.`);
   }
-  
-  if (!utils.stringHasContent(ces_token)) 
-  {
+
+  if (!utils.stringHasContent(cesToken)) {
     isValid = false;
-    console.error(`Missing input:ces_token must be specified.`); 
+    console.error(`Missing input:ces_token must be specified.`);
   }
-  
-  if (!utils.stringHasContent(srid)) 
-  {
+
+  if (!utils.stringHasContent(srid)) {
     isValid = false;
-    console.error(`Missing input:srid must be specified.`); 
+    console.error(`Missing input:srid must be specified.`);
   }
-  
+
   return isValid;
 }
 
@@ -111,70 +106,71 @@ function getHttpGetPromise(requestUrl, token) {
   return axios.get(requestUrl.href, options);
 }
 
-function prepareRequestQueryPath(inputs)
-{
-  let requestQueryPath ="?";
-  if (utils.stringHasContent(inputs.todaysDate)) 
-  {
+/**
+ * Builds the query string for the deployments request from optional inputs.
+ * @param {object} inputs action inputs retrieved from the workflow
+ * @return {string} query path beginning with '?' when parameters exist
+ */
+function prepareRequestQueryPath(inputs) {
+  let requestQueryPath ='?';
+  if (utils.stringHasContent(inputs.todaysDate)) {
     requestQueryPath= requestQueryPath.concat(`todaysDate=${inputs.todaysDate}&`);
   }
-  if (utils.stringHasContent(inputs.priorWeek)) 
-  {
+  if (utils.stringHasContent(inputs.priorWeek)) {
     requestQueryPath= requestQueryPath.concat(`priorWeek=${inputs.priorWeek}&`);
   }
-  if (utils.stringHasContent(inputs.startDate)) 
-  {
+  if (utils.stringHasContent(inputs.startDate)) {
     requestQueryPath= requestQueryPath.concat(`startDate=${inputs.startDate}&`);
   }
-  if (utils.stringHasContent(inputs.endDate)) 
-  {
+  if (utils.stringHasContent(inputs.endDate)) {
     requestQueryPath= requestQueryPath.concat(`endDate=${inputs.endDate}&`);
   }
-  if (utils.stringHasContent(inputs.requestId)) 
-  {
+  if (utils.stringHasContent(inputs.requestId)) {
     requestQueryPath= requestQueryPath.concat(`requestId=${inputs.requestId}&`);
   }
-  if (utils.stringHasContent(inputs.setId)) 
-  {
+  if (utils.stringHasContent(inputs.setId)) {
     requestQueryPath=requestQueryPath.concat(`setId=${inputs.setId}&`);
   }
-  if (utils.stringHasContent(inputs.environment)) 
-  {
+  if (utils.stringHasContent(inputs.environment)) {
     requestQueryPath=requestQueryPath.concat(`environment=${inputs.environment}&`);
   }
-  if (utils.stringHasContent(inputs.status)) 
-  {
+  if (utils.stringHasContent(inputs.status)) {
     requestQueryPath=requestQueryPath.concat(`status=${inputs.status}&`);
   }
-  if(requestQueryPath.endsWith('&') || requestQueryPath.endsWith('?') || requestQueryPath.endsWith('?&') )
-  {
+  const endsWithAmp = requestQueryPath.endsWith('&');
+  const endsWithQ = requestQueryPath.endsWith('?');
+  const endsWithQAmp = requestQueryPath.endsWith('?&');
+  if (endsWithAmp || endsWithQ || endsWithQAmp) {
     requestQueryPath = requestQueryPath.substring(0, requestQueryPath.length - 1);
   }
   core.debug('Code Pipeline: Final Request Query Url PAth: ' + requestQueryPath);
   return requestQueryPath;
 }
 
-function prepareRequestUrl(cesUrl, requestBasePath, requestQueryPath) 
-{
-  let lowercaseUrl = cesUrl.toLowerCase();
-  
-  // remove trailing '/compuware' from url, if it exists  
+/**
+ * Normalizes the CES base URL and returns the full deployments request URL.
+ * @param {string} cesUrl CES base URL from action inputs
+ * @param {string} requestBasePath path including SRID deployments segment
+ * @param {string} requestQueryPath optional query string
+ * @return {URL} fully composed request URL
+ */
+function prepareRequestUrl(cesUrl, requestBasePath, requestQueryPath) {
+  const lowercaseUrl = cesUrl.toLowerCase();
+
+  // remove trailing '/compuware' from url, if it exists
   const cpwrIndex = lowercaseUrl.lastIndexOf('/compuware');
-  if (cpwrIndex > 0) 
-  {
+  if (cpwrIndex > 0) {
     cesUrl = cesUrl.substring(0, cpwrIndex);
   }
 
   // remove trailing '/bmc' from url, if it exists
   const bmcIndex = lowercaseUrl.lastIndexOf('/bmc');
-  if (bmcIndex > 0) 
-  {
+  if (bmcIndex > 0) {
     cesUrl = cesUrl.substring(0, bmcIndex);
   }
-    
+
   // remove trailing slash
-  if (cesUrl.endsWith('/')) 
-  {
+  if (cesUrl.endsWith('/')) {
     cesUrl = cesUrl.substring(0, cesUrl.length - 1);
   }
 
@@ -216,9 +212,7 @@ function handleResponseBody(responseBody) {
     // empty response
     throw new DeploymentListFailureException(
         'No response was received from the deployment list request.');
-  } 
-  else 
-  {
+  } else {
     // success
     return responseBody;
   }
@@ -249,5 +243,5 @@ DeploymentListFailureException.prototype = Object.create(Error.prototype);
 module.exports = {
   handleResponseBody,
   DeploymentListFailureException,
-  validateRequiredParms
+  validateRequiredParms,
 };
